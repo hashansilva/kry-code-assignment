@@ -65,6 +65,16 @@ Response shape:
 }
 ```
 
+## OpenAPI 3 / Swagger
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+
+The API includes operation-level documentation for assessment and booking endpoints.
+
+## Health Check (Spring Boot Actuator)
+- Health endpoint: `http://localhost:8080/actuator/health`
+- Exposed actuator endpoints: `health`, `info`
+
 ## Scheduling Rules Implemented
 - 15-minute slot intervals
 - Clinic operating hours: `08:00-18:00` local time

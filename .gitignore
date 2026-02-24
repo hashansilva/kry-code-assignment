@@ -33,3 +33,4 @@ coverage/
 
 # Docker overrides
 docker-compose.override.yml
+AGENTS.md

@@ -31,6 +31,16 @@ Patients complete a 5-question assessment, receive a care recommendation (`Chat`
 
 ## API Endpoints
 
+### `GET /availability`
+Response shape:
+```json
+{
+  "nextAvailableSlot": "2026-02-20T09:00:00"
+}
+```
+
+This endpoint is used by the landing page to calculate the real-time `See a doctor in X mins/hrs` message from the earliest currently available slot.
+
 ### `POST /assessment`
 Request:
 ```json

@@ -1,6 +1,7 @@
 package com.kry.triage.service;
 
 import com.kry.triage.dto.AssessmentResponse;
+import com.kry.triage.dto.NextAvailabilityResponse;
 import com.kry.triage.entity.BookingEntity;
 import com.kry.triage.model.Recommendation;
 import com.kry.triage.repository.BookingRepository;
@@ -59,6 +60,29 @@ class AssessmentServiceTest {
         assertEquals(availableSlots, response.availableSlots());
 
         verify(recommendationService).calculate(10);
+        verify(bookingRepository).findBySlotBetween(any(LocalDateTime.class), any(LocalDateTime.class));
+        verify(slotService).getAvailableSlots(any(LocalDateTime.class), eq(bookedSlots));
+    }
+
+    @Test
+    void shouldReturnEarliestAvailableSlotForLandingPage() {
+        BookingEntity booking = new BookingEntity();
+        booking.setSlot(LocalDateTime.of(2026, 2, 20, 9, 0));
+
+        List<LocalDateTime> bookedSlots = List.of(booking.getSlot());
+        List<LocalDateTime> availableSlots = List.of(
+                LocalDateTime.of(2026, 2, 20, 9, 15),
+                LocalDateTime.of(2026, 2, 20, 9, 30)
+        );
+
+        when(bookingRepository.findBySlotBetween(any(LocalDateTime.class), any(LocalDateTime.class)))
+                .thenReturn(List.of(booking));
+        when(slotService.getAvailableSlots(any(LocalDateTime.class), eq(bookedSlots))).thenReturn(availableSlots);
+
+        NextAvailabilityResponse response = assessmentService.getNextAvailability();
+
+        assertEquals(LocalDateTime.of(2026, 2, 20, 9, 15), response.nextAvailableSlot());
+
         verify(bookingRepository).findBySlotBetween(any(LocalDateTime.class), any(LocalDateTime.class));
         verify(slotService).getAvailableSlots(any(LocalDateTime.class), eq(bookedSlots));
     }

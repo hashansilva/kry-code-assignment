@@ -16,6 +16,10 @@ export interface BookingResponse {
   recommendation: Recommendation;
 }
 
+export interface NextAvailabilityResponse {
+  nextAvailableSlot: string | null;
+}
+
 export interface QuestionOption {
   label: string;
   score: number;

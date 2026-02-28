@@ -1,0 +1,78 @@
+.app-shell {
+  min-height: 100vh;
+  padding: 32px 16px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(13, 110, 110, 0.18), transparent 34%),
+    radial-gradient(circle at 90% 85%, rgba(244, 124, 72, 0.18), transparent 28%),
+    linear-gradient(160deg, #f5fbfa 0%, #eef3f8 100%);
+}
+
+.content-wrap {
+  .MuiPaper-root,
+  .MuiCard-root {
+    border: 1px solid rgba(13, 110, 110, 0.14);
+    box-shadow: 0 12px 28px rgba(2, 36, 36, 0.08);
+  }
+}
+
+.hero-title {
+  font-weight: 700;
+  max-width: 18ch;
+}
+
+.option-row {
+  cursor: pointer;
+  border: 1px solid #dce7e5;
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: border-color 120ms ease, background-color 120ms ease, transform 120ms ease;
+
+  &:hover {
+    border-color: #0d6e6e;
+    background-color: #f4fbfb;
+    transform: translateY(-1px);
+  }
+
+  &.selected {
+    border-color: #0d6e6e;
+    background-color: #e8f7f7;
+  }
+}
+
+.screen-enter {
+  animation: reveal 180ms ease-out;
+}
+
+.slots-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.slot-button {
+  justify-content: flex-start;
+  text-align: left;
+  min-height: 44px;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .app-shell {
+    padding: 20px 10px;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+}

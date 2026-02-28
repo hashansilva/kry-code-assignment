@@ -15,3 +15,15 @@ services:
       retries: 3
       start_period: 30s
     restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: triage-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+    restart: unless-stopped

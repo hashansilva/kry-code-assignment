@@ -1,4 +1,4 @@
-import { AssessmentResponse, BookingRequest, BookingResponse } from '../types';
+import { AssessmentResponse, BookingRequest, BookingResponse, NextAvailabilityResponse } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
@@ -20,6 +20,11 @@ export async function submitAssessment(score: number): Promise<AssessmentRespons
   });
 
   return parseResponse<AssessmentResponse>(response);
+}
+
+export async function fetchNextAvailability(): Promise<NextAvailabilityResponse> {
+  const response = await fetch(`${API_BASE_URL}/availability`);
+  return parseResponse<NextAvailabilityResponse>(response);
 }
 
 export async function submitBooking(payload: BookingRequest): Promise<BookingResponse> {

@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, CircularProgress, Container, CssBaseline, Stack, ThemeProvider, Typography, createTheme } from '@mui/material';
 import StartScreen from './components/StartScreen';
 import QuestionnaireScreen from './components/QuestionnaireScreen';
 import RecommendationScreen from './components/RecommendationScreen';
 import BookingConfirmedScreen from './components/BookingConfirmedScreen';
 import { QUESTIONS } from './constants/questions';
-import { submitAssessment, submitBooking } from './api/client';
+import { fetchNextAvailability, submitAssessment, submitBooking } from './api/client';
 import { AssessmentResponse, BookingResponse } from './types';
 
 import './styles/app.scss';
@@ -33,9 +33,28 @@ const theme = createTheme({
   }
 });
 
-function getEstimatedWaitText(): string {
-  const minutes = 12 + (new Date().getMinutes() % 11);
-  return `${minutes} mins`;
+function formatWaitMessage(nextAvailableSlot: string | null): string {
+  if (!nextAvailableSlot) {
+    return 'No appointments available in the next 3 days';
+  }
+
+  const minutesUntil = Math.max(
+    0,
+    Math.ceil((new Date(nextAvailableSlot).getTime() - Date.now()) / (1000 * 60))
+  );
+
+  if (minutesUntil < 60) {
+    return `See a doctor in ${minutesUntil} min${minutesUntil === 1 ? '' : 's'}`;
+  }
+
+  const hours = Math.floor(minutesUntil / 60);
+  const minutes = minutesUntil % 60;
+
+  if (minutes === 0) {
+    return `See a doctor in ${hours} hr${hours === 1 ? '' : 's'}`;
+  }
+
+  return `See a doctor in ${hours} hr${hours === 1 ? '' : 's'} ${minutes} mins`;
 }
 
 function App() {
@@ -52,8 +71,36 @@ function App() {
   const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
   const [assessmentError, setAssessmentError] = useState<string | null>(null);
   const [bookingError, setBookingError] = useState<string | null>(null);
+  const [waitMessage, setWaitMessage] = useState('Checking current availability...');
 
-  const waitText = useMemo(() => getEstimatedWaitText(), []);
+  useEffect(() => {
+    if (stage !== 'start') {
+      return undefined;
+    }
+
+    let isActive = true;
+
+    const loadWaitTime = async () => {
+      try {
+        const response = await fetchNextAvailability();
+        if (isActive) {
+          setWaitMessage(formatWaitMessage(response.nextAvailableSlot));
+        }
+      } catch {
+        if (isActive) {
+          setWaitMessage('Current availability is temporarily unavailable');
+        }
+      }
+    };
+
+    void loadWaitTime();
+    const intervalId = window.setInterval(loadWaitTime, 60_000);
+
+    return () => {
+      isActive = false;
+      window.clearInterval(intervalId);
+    };
+  }, [stage]);
 
   const currentQuestion = QUESTIONS[questionIndex];
   const selectedScore = answers[questionIndex];
@@ -178,7 +225,7 @@ function App() {
 
             {stage === 'start' && (
               <StartScreen
-                waitText={waitText}
+                waitMessage={waitMessage}
                 upcomingBookingText={confirmedBooking ? new Date(confirmedBooking.slot).toLocaleString() : null}
                 onStart={startQuestionnaire}
               />
